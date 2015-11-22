@@ -9,7 +9,12 @@ package com.daraf.projectdarafapp.server;
  *
  * @author RAUL
  */
+import com.daraf.projectdarafapp.facade.AppFacade;
+import com.daraf.projectdarafprotocol.Mensaje;
+import com.daraf.projectdarafprotocol.clienteapp.seguridades.AutenticacionEmpresaRQ;
 import com.daraf.projectdarafprotocol.clienteapp.MensajeRQ;
+import com.daraf.projectdarafprotocol.clienteapp.MensajeRS;
+import com.daraf.projectdarafprotocol.clienteapp.seguridades.AutenticacionEmpresaRS;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -43,14 +48,22 @@ public class AppSocketSession extends Thread {
                 System.out.println("Hilo: " + this.id + " Mensaje recibido: " + userInput);
                 MensajeRQ msj = new MensajeRQ();
                 if (msj.build(userInput)) {
-                    if (msj.getCabecera().getIdMensaje().equals("Autenticacion")) {
-                    //metodo de autenticacion
-                        
-                    
+                    if (msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_AUTENTICACIONCLIENTE)) {
+
+                        //metodo de autenticacion
+                        AutenticacionEmpresaRQ aut = (AutenticacionEmpresaRQ) msj.getCuerpo();
+
+                        String response = AppFacade.getAuthentication(aut.getEmpresa().getNombre(), aut.getEmpresa().getNombre());
+                        MensajeRS mensajeRS = new MensajeRS("appserver", Mensaje.ID_MENSAJE_AUTENTICACIONCLIENTE);
+                        AutenticacionEmpresaRS autRS = new AutenticacionEmpresaRS();
+                        autRS.setResultado(response);
+                        mensajeRS.setCuerpo(autRS);
+                        output.write(mensajeRS.asTexto());
+                        output.flush();
                     }
                 }
 
-                output.flush();
+
                 if ("FIN".equalsIgnoreCase(userInput)) {
                     break;
                 }
