@@ -10,5 +10,7 @@ package com.daraf.projectdarafapp;
  * @author Alejandra Ponce
  */
 public class TestApp {
-    
+    public static void main(String[] args) {
+        System.out.println("hola");
+    }
 }
