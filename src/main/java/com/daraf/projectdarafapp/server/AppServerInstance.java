@@ -17,15 +17,15 @@ public class AppServerInstance {
     public static void main(String[] args) {
         System.out.println("Servidor de Aplicaciones arriba");
         try{
-            ServerSocket server = new ServerSocket(4420);
+            ServerSocket server = new ServerSocket(4001);
             while(true){
                 Socket client = server.accept();
                 new AppSocketSession(client).start();
                 System.out.println("El servidor ha recibido una conexion");
-                
             }    
         }
         catch(Exception e){
+            e.printStackTrace();
             System.out.println("Error: "+e.getMessage());
         }
     }
