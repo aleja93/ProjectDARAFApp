@@ -22,7 +22,6 @@ public class AppServerInstance {
                 Socket client = server.accept();
                 new AppSocketSession(client).start();
                 System.out.println("El servidor ha recibido una conexion");
-                
             }    
         }
         catch(Exception e){
