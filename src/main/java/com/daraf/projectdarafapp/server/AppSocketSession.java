@@ -14,7 +14,10 @@ import com.daraf.projectdarafprotocol.Mensaje;
 import com.daraf.projectdarafprotocol.clienteapp.seguridades.AutenticacionEmpresaRQ;
 import com.daraf.projectdarafprotocol.clienteapp.MensajeRQ;
 import com.daraf.projectdarafprotocol.clienteapp.MensajeRS;
+import com.daraf.projectdarafprotocol.clienteapp.ingresos.IngresoClienteRQ;
+import com.daraf.projectdarafprotocol.clienteapp.ingresos.IngresoClienteRS;
 import com.daraf.projectdarafprotocol.clienteapp.seguridades.AutenticacionEmpresaRS;
+import com.daraf.projectdarafprotocol.model.Empresa;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -45,6 +48,10 @@ public class AppSocketSession extends Thread {
             String userInput;
 
             while ((userInput = input.readLine()) != null) {
+
+                if ("FIN".equalsIgnoreCase(userInput)) {
+                    break;
+                }
                 System.out.println("Hilo: " + this.id + " Mensaje recibido: " + userInput);
                 MensajeRQ msj = new MensajeRQ();
                 if (msj.build(userInput)) {
@@ -52,26 +59,43 @@ public class AppSocketSession extends Thread {
 
                         //metodo de autenticacion
                         AutenticacionEmpresaRQ aut = (AutenticacionEmpresaRQ) msj.getCuerpo();
+                        Empresa response = AppFacade.getAuthenticationEmpresa(aut.getUserId(), aut.getPassword());
 
-                        String response = AppFacade.getAuthentication(aut.getEmpresa().getNombre(), aut.getEmpresa().getNombre());
                         MensajeRS mensajeRS = new MensajeRS("appserver", Mensaje.ID_MENSAJE_AUTENTICACIONCLIENTE);
                         AutenticacionEmpresaRS autRS = new AutenticacionEmpresaRS();
-                        autRS.setResultado(response);
+                        if (response != null) {
+                            autRS.setResultado("1");
+                            autRS.setEmpresa(response);
+                        } else {
+                            autRS.setResultado("2");
+                        }
+
                         mensajeRS.setCuerpo(autRS);
-                        output.write(mensajeRS.asTexto());
+                        output.write(mensajeRS.asTexto() + "\n");
                         output.flush();
                     }
-                }
-
-
-                if ("FIN".equalsIgnoreCase(userInput)) {
-                    break;
+                    if(msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_INGRESOCLIENTE))
+                    {
+                        IngresoClienteRQ ing = (IngresoClienteRQ) msj.getCuerpo();
+                        Boolean ingresocorrecto =AppFacade.insernewclient(ing.getId(),ing.getNombre(),ing.getDireccion(),ing.getTelefono());
+                        MensajeRS mensajeRS = new MensajeRS("appserver",Mensaje.ID_MENSAJE_INGRESOCLIENTE);
+                        IngresoClienteRS ingrs =new IngresoClienteRS();
+                        if(ingresocorrecto)
+                           ingrs.setResultado("1");
+                        else{
+                            ingrs.setResultado("2");
+                        }
+                        mensajeRS.setCuerpo(ingrs);
+                        output.write(mensajeRS.asTexto() + "\n");
+                        output.flush();
+                    }
                 }
 
             }
             socket.close();
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            e.printStackTrace();
+            System.out.println("Error: " + e);
         }
     }
 
