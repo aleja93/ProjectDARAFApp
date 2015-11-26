@@ -17,8 +17,10 @@ import com.daraf.projectdarafprotocol.clienteapp.MensajeRS;
 import com.daraf.projectdarafprotocol.clienteapp.ingresos.IngresoClienteRQ;
 import com.daraf.projectdarafprotocol.clienteapp.ingresos.IngresoClienteRS;
 import com.daraf.projectdarafprotocol.clienteapp.ingresos.IngresoFacturaRQ;
+import com.daraf.projectdarafprotocol.clienteapp.ingresos.IngresoFacturaRS;
 import com.daraf.projectdarafprotocol.clienteapp.seguridades.AutenticacionEmpresaRS;
 import com.daraf.projectdarafprotocol.model.Empresa;
+import com.daraf.projectdarafutil.NetUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -75,37 +77,33 @@ public class AppSocketSession extends Thread {
                         output.write(mensajeRS.asTexto() + "\n");
                         output.flush();
                     }
-                    if(msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_INGRESOCLIENTE))
-                    {
+                    if (msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_INGRESOCLIENTE)) {
                         IngresoClienteRQ ing = (IngresoClienteRQ) msj.getCuerpo();
-                        Boolean ingresocorrecto =AppFacade.insernewclient(ing.getId(),ing.getNombre(),ing.getDireccion(),ing.getTelefono());
-                        MensajeRS mensajeRS = new MensajeRS("appserver",Mensaje.ID_MENSAJE_INGRESOCLIENTE);
-                        IngresoClienteRS ingrs =new IngresoClienteRS();
-                        if(ingresocorrecto)
-                           ingrs.setResultado("1");
-                        else{
+                        Boolean ingresocorrecto = AppFacade.insernewclient(ing.getId(), ing.getNombre(), ing.getDireccion(), ing.getTelefono());
+                        MensajeRS mensajeRS = new MensajeRS("appserver", Mensaje.ID_MENSAJE_INGRESOCLIENTE);
+                        IngresoClienteRS ingrs = new IngresoClienteRS();
+                        if (ingresocorrecto) {
+                            ingrs.setResultado("1");
+                        } else {
                             ingrs.setResultado("2");
                         }
                         mensajeRS.setCuerpo(ingrs);
                         output.write(mensajeRS.asTexto() + "\n");
                         output.flush();
                     }
-                    
-                    if(msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_INGRESOFACTURA))
-                    {
+
+                    if (msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_INGRESOFACTURA)) {
                         IngresoFacturaRQ ing = (IngresoFacturaRQ) msj.getCuerpo();
-                        
-                        Boolean ingresocorrecto =AppFacade.insertarNuevaFactura(ing.getIdentificacion(),ing.getNombre(),ing.getDireccion(),ing.getTelefono(),ing.getDetalles());
-                        MensajeRS mensajeRS = new MensajeRS("appserver",Mensaje.ID_MENSAJE_INGRESOCLIENTE);
-//                        IngresoClienteRS ingrs =new IngresoClienteRS();
-//                        if(ingresocorrecto)
-//                           ingrs.setResultado("1");
-//                        else{
-//                            ingrs.setResultado("2");
-//                        }
-//                        mensajeRS.setCuerpo(ingrs);
-//                        output.write(mensajeRS.asTexto() + "\n");
-//                        output.flush();
+//verificar
+                        String ingresocorrecto = AppFacade.insertarNuevaFactura(ing.get(), ing.getNombre(), ing.getDireccion(), ing.getTelefono(), ing.getDetalles());
+                        MensajeRS mensajeRS = new MensajeRS(NetUtil.getLocalIPAddress(), Mensaje.ID_MENSAJE_INGRESOFACTURA);
+                        IngresoFacturaRS ingrs = new IngresoFacturaRS();
+
+                        ingrs.setResultado(ingresocorrecto);
+
+                        mensajeRS.setCuerpo(ingrs);
+                        output.write(mensajeRS.asTexto() + "\n");
+                        output.flush();
                     }
                 }
 
