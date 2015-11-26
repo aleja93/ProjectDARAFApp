@@ -14,10 +14,13 @@ import com.daraf.projectdarafprotocol.Mensaje;
 import com.daraf.projectdarafprotocol.clienteapp.seguridades.AutenticacionEmpresaRQ;
 import com.daraf.projectdarafprotocol.clienteapp.MensajeRQ;
 import com.daraf.projectdarafprotocol.clienteapp.MensajeRS;
+import com.daraf.projectdarafprotocol.clienteapp.consultas.ConsultaProductoRQ;
+import com.daraf.projectdarafprotocol.clienteapp.consultas.ConsultaProductoRS;
 import com.daraf.projectdarafprotocol.clienteapp.ingresos.IngresoClienteRQ;
 import com.daraf.projectdarafprotocol.clienteapp.ingresos.IngresoClienteRS;
 import com.daraf.projectdarafprotocol.clienteapp.seguridades.AutenticacionEmpresaRS;
 import com.daraf.projectdarafprotocol.model.Empresa;
+import com.daraf.projectdarafprotocol.model.Producto;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -74,21 +77,40 @@ public class AppSocketSession extends Thread {
                         output.write(mensajeRS.asTexto() + "\n");
                         output.flush();
                     }
-                    if(msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_INGRESOCLIENTE))
-                    {
+                    if (msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_INGRESOCLIENTE)) {
                         IngresoClienteRQ ing = (IngresoClienteRQ) msj.getCuerpo();
-                        Boolean ingresocorrecto =AppFacade.insernewclient(ing.getId(),ing.getNombre(),ing.getDireccion(),ing.getTelefono());
-                        MensajeRS mensajeRS = new MensajeRS("appserver",Mensaje.ID_MENSAJE_INGRESOCLIENTE);
-                        IngresoClienteRS ingrs =new IngresoClienteRS();
-                        if(ingresocorrecto)
-                           ingrs.setResultado("1");
-                        else{
+                        Boolean ingresocorrecto = AppFacade.insernewclient(ing.getId(), ing.getNombre(), ing.getDireccion(), ing.getTelefono());
+                        MensajeRS mensajeRS = new MensajeRS("appserver", Mensaje.ID_MENSAJE_INGRESOCLIENTE);
+                        IngresoClienteRS ingrs = new IngresoClienteRS();
+                        if (ingresocorrecto) {
+                            ingrs.setResultado("1");
+                        } else {
                             ingrs.setResultado("2");
                         }
                         mensajeRS.setCuerpo(ingrs);
                         output.write(mensajeRS.asTexto() + "\n");
                         output.flush();
                     }
+                    if (msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_CONSULTAPRODUCTO)) {
+
+                        //metodo de consulta producto
+                        ConsultaProductoRQ cprq = (ConsultaProductoRQ) msj.getCuerpo();
+                        Producto response = AppFacade.getProducto(cprq.getIdProducto());
+
+                        MensajeRS mensajeRS = new MensajeRS("appserver", Mensaje.ID_MENSAJE_CONSULTAPRODUCTO);
+                        ConsultaProductoRS cprs = new ConsultaProductoRS();
+                        if (response != null) {
+                            cprs.setResultado("1");
+                            cprs.setProducto(response);
+                        } else {
+                            cprs.setResultado("2");
+                        }
+
+                        mensajeRS.setCuerpo(cprs);
+                        output.write(mensajeRS.asTexto() + "\n");
+                        output.flush();
+                    }
+
                 }
 
             }
