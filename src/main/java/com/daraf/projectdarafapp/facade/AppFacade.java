@@ -5,6 +5,7 @@
  */
 package com.daraf.projectdarafapp.facade;
 
+
 import com.daraf.projectdarafprotocol.DBClient;
 import com.daraf.projectdarafprotocol.appdb.MensajeRQ;
 import com.daraf.projectdarafprotocol.appdb.MensajeRS;
@@ -16,6 +17,7 @@ import com.daraf.projectdarafprotocol.appdb.seguridades.AutenticacionEmpresaRQ;
 import com.daraf.projectdarafprotocol.appdb.seguridades.AutenticacionEmpresaRS;
 import com.daraf.projectdarafprotocol.model.Cliente;
 import com.daraf.projectdarafprotocol.model.Empresa;
+import com.daraf.projectdarafprotocol.model.Producto;
 
 /**
  *
@@ -74,6 +76,19 @@ public class AppFacade {
             if (cli.getCliente().getIdentificacion().equals(datos)) {
                 return cli.getCliente();
             }
+    
+    public static Producto getProducto(String idProducto) {
+        DBClient dbClient = new DBClient();
+        MensajeRQ msj = new MensajeRQ("appserver", MensajeRQ.ID_MENSAJE_CONSULTAPRODUCTO);
+        ConsultaProductoRQ cprq =new ConsultaProductoRQ();
+        cprq.setIdProducto(idProducto);
+        msj.setCuerpo(cprq);
+        
+        MensajeRS response = dbClient.sendRequest(msj);
+        
+        ConsultaProductoRS cprs = (ConsultaProductoRS) response.getCuerpo();
+        if (cprs.getResultado().equals("1")) {
+                return cprs.getProducto();
         }
         return null;
     }
