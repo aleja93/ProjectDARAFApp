@@ -5,18 +5,25 @@
  */
 package com.daraf.projectdarafapp.facade;
 
+
 import com.daraf.projectdarafprotocol.DBClient;
 import com.daraf.projectdarafprotocol.appdb.MensajeRQ;
 import com.daraf.projectdarafprotocol.appdb.MensajeRS;
+import com.daraf.projectdarafprotocol.appdb.consultas.ConsultaClienteRQ;
+import com.daraf.projectdarafprotocol.appdb.consultas.ConsultaClienteRS;
 import com.daraf.projectdarafprotocol.appdb.ingresos.IngresoClienteRQ;
 import com.daraf.projectdarafprotocol.appdb.ingresos.IngresoClienteRS;
 import com.daraf.projectdarafprotocol.appdb.seguridades.AutenticacionEmpresaRQ;
 import com.daraf.projectdarafprotocol.appdb.seguridades.AutenticacionEmpresaRS;
+import com.daraf.projectdarafprotocol.appdb.consultas.ConsultaProductoRQ;
+import com.daraf.projectdarafprotocol.appdb.consultas.ConsultaProductoRS;
+import com.daraf.projectdarafprotocol.model.Cliente;
 import com.daraf.projectdarafprotocol.appdb.ingresos.IngresoFacturaRQ;
 import com.daraf.projectdarafprotocol.appdb.ingresos.IngresoFacturaRS;
 import com.daraf.projectdarafprotocol.model.Detalle;
 import com.daraf.projectdarafprotocol.model.DetalleFacturaAppRQ;
 import com.daraf.projectdarafprotocol.model.Empresa;
+import com.daraf.projectdarafprotocol.model.Producto;
 import com.daraf.projectdarafutil.NetUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,5 +101,35 @@ public class AppFacade {
         } else {
             return "4";
         }
+    }
+    public static Cliente consultaCliente(String datos)
+    {
+        DBClient dbClient=new DBClient();
+        MensajeRQ msj=new MensajeRQ("appserver",MensajeRQ.ID_MENSAJE_CONSULTACLIENTE);
+        ConsultaClienteRQ con=new ConsultaClienteRQ();
+        con.setIdentificacion(datos);
+        msj.setCuerpo(con);
+        
+        MensajeRS response=dbClient.sendRequest(msj);
+        ConsultaClienteRS cli =(ConsultaClienteRS) response.getCuerpo();
+         if (cli.getResultado().equals("1")) {
+            return cli.getCliente();
+         }
+         return null;
+    }
+    public static Producto getProducto(String idProducto) {
+        DBClient dbClient = new DBClient();
+        MensajeRQ msj = new MensajeRQ("appserver", MensajeRQ.ID_MENSAJE_CONSULTAPRODUCTO);
+        ConsultaProductoRQ cprq =new ConsultaProductoRQ();
+        cprq.setIdProducto(idProducto);
+        msj.setCuerpo(cprq);
+        
+        MensajeRS response = dbClient.sendRequest(msj);
+        
+        ConsultaProductoRS cprs = (ConsultaProductoRS) response.getCuerpo();
+        if (cprs.getResultado().equals("1")) {
+                return cprs.getProducto();
+        }
+        return null;
     }
 }
