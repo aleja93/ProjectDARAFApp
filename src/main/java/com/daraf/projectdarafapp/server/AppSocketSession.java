@@ -112,6 +112,11 @@ public class AppSocketSession extends Thread {
                     }
 
                 }
+                else
+                {
+                    output.write("Fallo al construirse\n");
+                    output.flush();
+                }
 
             }
             socket.close();
