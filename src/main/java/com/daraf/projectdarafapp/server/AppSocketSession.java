@@ -26,6 +26,7 @@ import com.daraf.projectdarafprotocol.clienteapp.seguridades.AutenticacionEmpres
 import com.daraf.projectdarafprotocol.model.Cliente;
 import com.daraf.projectdarafprotocol.model.Empresa;
 import com.daraf.projectdarafprotocol.model.Producto;
+import com.daraf.projectdarafutil.NetUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -96,13 +97,12 @@ public class AppSocketSession extends Thread {
                         output.write(mensajeRS.asTexto() + "\n");
                         output.flush();
                     }
-                    if(msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_CONSULTACLIENTE))
-                    {
+                    if (msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_CONSULTACLIENTE)) {
                         ConsultaClienteRQ ing = (ConsultaClienteRQ) msj.getCuerpo();
-                        Cliente response=AppFacade.consultaCliente(ing.getIdentificacion());
-                        MensajeRS mensajeRS = new MensajeRS("appserver",Mensaje.ID_MENSAJE_CONSULTACLIENTE);
-                        ConsultaClienteRS cli =new ConsultaClienteRS();
-                         if (response != null) {
+                        Cliente response = AppFacade.consultaCliente(ing.getIdentificacion());
+                        MensajeRS mensajeRS = new MensajeRS("appserver", Mensaje.ID_MENSAJE_CONSULTACLIENTE);
+                        ConsultaClienteRS cli = new ConsultaClienteRS();
+                        if (response != null) {
                             cli.setResultado("1");
                             cli.setCliente(response);
                         } else {
@@ -131,11 +131,18 @@ public class AppSocketSession extends Thread {
                         output.write(mensajeRS.asTexto() + "\n");
                         output.flush();
                     }
-
-                }
-                else
-                {
-                    output.write(Mensaje.ID_MENSAJE_FALLOBUILD+"\n");
+                    if (msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_INGRESOFACTURA)) {                        
+                        IngresoFacturaRQ ing = (IngresoFacturaRQ) msj.getCuerpo();
+                        String ingreso = AppFacade.insertarNuevaFactura(ing.getIdFactura(), ing.getIdentificacion(), ing.getFecha(), ing.getTotal(), ing.getDetalles());
+                        MensajeRS mensajeRS = new MensajeRS(NetUtil.getLocalIPAddress(), Mensaje.ID_MENSAJE_INGRESOFACTURA);
+                        IngresoFacturaRS ingrs = new IngresoFacturaRS();
+                        ingrs.setResultado(ingreso);
+                        mensajeRS.setCuerpo(ingrs);
+                        output.write(mensajeRS.asTexto() + "\n");
+                        output.flush();
+                    }
+                } else {
+                    output.write(Mensaje.ID_MENSAJE_FALLOBUILD + "\n");
                     output.flush();
                 }
 
