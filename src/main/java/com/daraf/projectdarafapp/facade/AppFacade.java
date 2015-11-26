@@ -55,11 +55,11 @@ public class AppFacade {
         DBClient dbclient = new DBClient();
         MensajeRQ msj = new MensajeRQ("appserver", MensajeRQ.ID_MENSAJE_INGRESOCLIENTE);
         IngresoClienteRQ ing = new IngresoClienteRQ();
-        ing.setId(id);
-        ing.setNombre(nombre);
-        ing.setDireccion(direccion);
-        ing.setTelefono(telefono);
-        msj.setCuerpo(ing);
+//        ing.getCliente().setIdentificacion(id);
+//        ing.getCliente().setNombre(nombre);
+//        ing.setDireccion(direccion);
+//        ing.setTelefono(telefono);
+//        msj.setCuerpo(ing);
         MensajeRS response = dbclient.sendRequest(msj);
         IngresoClienteRS ingrs = (IngresoClienteRS) response.getCuerpo();
         if (ingrs.getResultado().equals("1")) {
