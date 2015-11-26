@@ -114,7 +114,7 @@ public class AppSocketSession extends Thread {
                 }
                 else
                 {
-                    output.write("Fallo al construirse\n");
+                    output.write(Mensaje.ID_MENSAJE_FALLOBUILD+"\n");
                     output.flush();
                 }
 
