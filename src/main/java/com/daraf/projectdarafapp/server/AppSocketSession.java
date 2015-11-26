@@ -135,7 +135,7 @@ public class AppSocketSession extends Thread {
                     }
                     if (msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_INGRESOFACTURA)) {                        
                         IngresoFacturaRQ ing = (IngresoFacturaRQ) msj.getCuerpo();
-                        String ingreso = AppFacade.insertarNuevaFactura(ing.getIdFactura(), ing.getIdentificacion(), ing.getFecha(), ing.getTotal(), ing.getDetalles());
+                        String ingreso = AppFacade.insertarNuevaFactura(ing.getIdFactura(), ing.getIdentificacion(), ing.getFecha(), ing.getTotal(), ing.getNumeroDetalles(), ing.getDetalles());
                         MensajeRS mensajeRS = new MensajeRS(NetUtil.getLocalIPAddress(), Mensaje.ID_MENSAJE_INGRESOFACTURA);
                         IngresoFacturaRS ingrs = new IngresoFacturaRS();
                         ingrs.setResultado(ingreso);

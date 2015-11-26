@@ -67,7 +67,7 @@ public class AppFacade {
         }
     }//ing.getIdentificacion(),ing.getNombre(),ing.getDireccion(),ing.getTelefono(),ing.getDetalles()
 
-    public static String insertarNuevaFactura(String id_facura, String identificacion, String fecha, String total, List<DetalleFacturaAppRQ> detalles) {
+    public static String insertarNuevaFactura(String id_facura, String identificacion, String fecha, String total, String numeroDetalles, List<DetalleFacturaAppRQ> detalles) {
         DBClient dbclient = new DBClient();
         MensajeRQ msj = new MensajeRQ(NetUtil.getLocalIPAddress(), MensajeRQ.ID_MENSAJE_INGRESOFACTURA);
         IngresoFacturaRQ ing = new IngresoFacturaRQ();
@@ -75,6 +75,7 @@ public class AppFacade {
         ing.setFecha(fecha);
         ing.setTotal(total);
         ing.setIdFactura(id_facura);
+        ing.setNumeroDetalles(numeroDetalles);
 
         Detalle detalle = null;
         List<Detalle> details = new ArrayList<>();
