@@ -5,7 +5,6 @@
  */
 package com.daraf.projectdarafapp.facade;
 
-
 import com.daraf.projectdarafprotocol.DBClient;
 import com.daraf.projectdarafprotocol.appdb.MensajeRQ;
 import com.daraf.projectdarafprotocol.appdb.MensajeRS;
@@ -76,9 +75,9 @@ public class AppFacade {
         IngresoFacturaRQ ing = new IngresoFacturaRQ();
         ing.setIdentificacionCliente(identificacion);
         ing.setFecha(fecha);
-
+        ing.setTotal(total);
         ing.setIdFactura(id_facura);
-        //ing.setDetalles(detalles);
+
         Detalle detalle = null;
         List<Detalle> details = new ArrayList<>();
         for (int i = 0; i < detalles.size(); i++) {
@@ -86,49 +85,60 @@ public class AppFacade {
             detalle.setIdFactura(id_facura);
             detalle.setCantidad(detalles.get(i).getCantidad());
             detalle.setIdProducto(detalles.get(i).getIdProducto());
+            Producto p = getProducto(detalles.get(i).getIdProducto());
+            if (p == null) {
+                detalle.setNombreProducto("quemado");//tengo que esperar el medtodo para buscar el numero de ese producto cn esa celda
+            } else {
+                if (Integer.valueOf(p.getCantidad().trim()) < Integer.valueOf(detalles.get(i).getCantidad())) {
+                    return "2";//el numero de productos que se desea facturar es mayor al stock
+                }
+                detalle.setNombreProducto(p.getNombre());//tengo que esperar el medtodo para buscar el numero de ese producto cn esa celda
+            }
 
-            detalle.setNombreProducto("quemado");//tengo que esperar el medtodo para buscar el numero de ese producto cn esa celda
             details.add(detalle);
         }
+
         ing.setDetalles(details);
         ing.setTotal(total);
-        ing.setNumeroDetalles(String.valueOf(detalles.size()));
-
+        ing.setNumeroDetalles(String.valueOf(details.size()));
+        
+        msj.setCuerpo(ing);
         MensajeRS response = dbclient.sendRequest(msj);
         IngresoFacturaRS ingrs = (IngresoFacturaRS) response.getCuerpo();
         if (ingrs != null) {
             return ingrs.getResultado();
         } else {
-            return "4";
+            return "5";//no se construyo el mensaje correctamente
         }
     }
-    public static Cliente consultaCliente(String datos)
-    {
-        DBClient dbClient=new DBClient();
-        MensajeRQ msj=new MensajeRQ("appserver",MensajeRQ.ID_MENSAJE_CONSULTACLIENTE);
-        ConsultaClienteRQ con=new ConsultaClienteRQ();
+
+    public static Cliente consultaCliente(String datos) {
+        DBClient dbClient = new DBClient();
+        MensajeRQ msj = new MensajeRQ("appserver", MensajeRQ.ID_MENSAJE_CONSULTACLIENTE);
+        ConsultaClienteRQ con = new ConsultaClienteRQ();
         con.setIdentificacion(datos);
         msj.setCuerpo(con);
-        
-        MensajeRS response=dbClient.sendRequest(msj);
-        ConsultaClienteRS cli =(ConsultaClienteRS) response.getCuerpo();
-         if (cli.getResultado().equals("1")) {
+
+        MensajeRS response = dbClient.sendRequest(msj);
+        ConsultaClienteRS cli = (ConsultaClienteRS) response.getCuerpo();
+        if (cli.getResultado().equals("1")) {
             return cli.getCliente();
-         }
-         return null;
+        }
+        return null;
     }
+
     public static Producto getProducto(String idProducto) {
         DBClient dbClient = new DBClient();
         MensajeRQ msj = new MensajeRQ("appserver", MensajeRQ.ID_MENSAJE_CONSULTAPRODUCTO);
-        ConsultaProductoRQ cprq =new ConsultaProductoRQ();
+        ConsultaProductoRQ cprq = new ConsultaProductoRQ();
         cprq.setIdProducto(idProducto);
         msj.setCuerpo(cprq);
-        
+
         MensajeRS response = dbClient.sendRequest(msj);
-        
+
         ConsultaProductoRS cprs = (ConsultaProductoRS) response.getCuerpo();
         if (cprs.getResultado().equals("1")) {
-                return cprs.getProducto();
+            return cprs.getProducto();
         }
         return null;
     }
