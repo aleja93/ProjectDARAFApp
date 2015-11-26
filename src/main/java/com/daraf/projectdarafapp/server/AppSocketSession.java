@@ -93,9 +93,10 @@ public class AppSocketSession extends Thread {
                     
                     if(msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_INGRESOFACTURA))
                     {
-//                        IngresoFacturaRQ ing = (IngresoFacturaRQ) msj.getCuerpo();
-//                        Boolean ingresocorrecto =AppFacade.insernewclient(ing.getId(),ing.getNombre(),ing.getDireccion(),ing.getTelefono());
-//                        MensajeRS mensajeRS = new MensajeRS("appserver",Mensaje.ID_MENSAJE_INGRESOCLIENTE);
+                        IngresoFacturaRQ ing = (IngresoFacturaRQ) msj.getCuerpo();
+                        
+                        Boolean ingresocorrecto =AppFacade.insertarNuevaFactura(ing.getIdentificacion(),ing.getNombre(),ing.getDireccion(),ing.getTelefono(),ing.getDetalles());
+                        MensajeRS mensajeRS = new MensajeRS("appserver",Mensaje.ID_MENSAJE_INGRESOCLIENTE);
 //                        IngresoClienteRS ingrs =new IngresoClienteRS();
 //                        if(ingresocorrecto)
 //                           ingrs.setResultado("1");
