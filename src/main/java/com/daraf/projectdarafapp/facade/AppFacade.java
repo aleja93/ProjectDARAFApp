@@ -51,15 +51,13 @@ public class AppFacade {
         return null;
     }
 
-    public static Boolean insernewclient(String id, String nombre, String direccion, String telefono) {
-        DBClient dbclient = new DBClient();
-        MensajeRQ msj = new MensajeRQ("appserver", MensajeRQ.ID_MENSAJE_INGRESOCLIENTE);
-        IngresoClienteRQ ing = new IngresoClienteRQ();
-//        ing.getCliente().setIdentificacion(id);
-//        ing.getCliente().setNombre(nombre);
-//        ing.setDireccion(direccion);
-//        ing.setTelefono(telefono);
-//        msj.setCuerpo(ing);
+    public static Boolean insernewclient(String id, String nombre, String telefono, String direccion)
+    {
+        DBClient dbclient =new DBClient();
+        MensajeRQ msj = new MensajeRQ("appserver",MensajeRQ.ID_MENSAJE_INGRESOCLIENTE);
+        IngresoClienteRQ ing =new IngresoClienteRQ();
+        ing.setCliente(new Cliente(id,nombre,telefono,direccion));
+        msj.setCuerpo(ing);
         MensajeRS response = dbclient.sendRequest(msj);
         IngresoClienteRS ingrs = (IngresoClienteRS) response.getCuerpo();
         if (ingrs.getResultado().equals("1")) {
