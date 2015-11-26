@@ -14,11 +14,14 @@ import com.daraf.projectdarafprotocol.Mensaje;
 import com.daraf.projectdarafprotocol.clienteapp.seguridades.AutenticacionEmpresaRQ;
 import com.daraf.projectdarafprotocol.clienteapp.MensajeRQ;
 import com.daraf.projectdarafprotocol.clienteapp.MensajeRS;
+import com.daraf.projectdarafprotocol.clienteapp.consultas.ConsultaClienteRQ;
+import com.daraf.projectdarafprotocol.clienteapp.consultas.ConsultaClienteRS;
 import com.daraf.projectdarafprotocol.clienteapp.consultas.ConsultaProductoRQ;
 import com.daraf.projectdarafprotocol.clienteapp.consultas.ConsultaProductoRS;
 import com.daraf.projectdarafprotocol.clienteapp.ingresos.IngresoClienteRQ;
 import com.daraf.projectdarafprotocol.clienteapp.ingresos.IngresoClienteRS;
 import com.daraf.projectdarafprotocol.clienteapp.seguridades.AutenticacionEmpresaRS;
+import com.daraf.projectdarafprotocol.model.Cliente;
 import com.daraf.projectdarafprotocol.model.Empresa;
 import com.daraf.projectdarafprotocol.model.Producto;
 import java.io.BufferedReader;
@@ -88,6 +91,22 @@ public class AppSocketSession extends Thread {
                             ingrs.setResultado("2");
                         }
                         mensajeRS.setCuerpo(ingrs);
+                        output.write(mensajeRS.asTexto() + "\n");
+                        output.flush();
+                    }
+                    if(msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_CONSULTACLIENTE))
+                    {
+                        ConsultaClienteRQ ing = (ConsultaClienteRQ) msj.getCuerpo();
+                        Cliente response=AppFacade.consultaCliente(ing.getIdentificacion());
+                        MensajeRS mensajeRS = new MensajeRS("appserver",Mensaje.ID_MENSAJE_CONSULTACLIENTE);
+                        ConsultaClienteRS cli =new ConsultaClienteRS();
+                         if (response != null) {
+                            cli.setResultado("1");
+                            cli.setCliente(response);
+                        } else {
+                            cli.setResultado("2");
+                        }
+                        mensajeRS.setCuerpo(cli);
                         output.write(mensajeRS.asTexto() + "\n");
                         output.flush();
                     }
