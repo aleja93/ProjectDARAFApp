@@ -75,9 +75,7 @@ public class AppFacade {
         MensajeRS response=dbClient.sendRequest(msj);
         ConsultaClienteRS cli =(ConsultaClienteRS) response.getCuerpo();
          if (cli.getResultado().equals("1")) {
-            if (cli.getCliente().getIdentificacion().equals(datos)) {
-                return cli.getCliente();
-            }
+            return cli.getCliente();
          }
          return null;
     }
