@@ -82,7 +82,9 @@ public class AppSocketSession extends Thread {
                     }
                     if (msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_INGRESOCLIENTE)) {
                         IngresoClienteRQ ing = (IngresoClienteRQ) msj.getCuerpo();
-                        Boolean ingresocorrecto = AppFacade.insernewclient(ing.getCliente().getIdentificacion(), ing.getCliente().getNombre(), ing.getCliente().getDireccion(), ing.getCliente().getTelefono());
+                
+                        Boolean ingresocorrecto = AppFacade.insernewclient(ing.getCliente().getIdentificacion(), ing.getCliente().getNombre(), ing.getCliente().getTelefono(), ing.getCliente().getDireccion());
+                       // System.out.print("******"+ing.getCliente().getIdentificacion());
                         MensajeRS mensajeRS = new MensajeRS("appserver", Mensaje.ID_MENSAJE_INGRESOCLIENTE);
                         IngresoClienteRS ingrs = new IngresoClienteRS();
                         if (ingresocorrecto) {
