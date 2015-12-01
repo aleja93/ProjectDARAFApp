@@ -10,6 +10,8 @@ import com.daraf.projectdarafprotocol.appdb.MensajeRQ;
 import com.daraf.projectdarafprotocol.appdb.MensajeRS;
 import com.daraf.projectdarafprotocol.appdb.consultas.ConsultaClienteRQ;
 import com.daraf.projectdarafprotocol.appdb.consultas.ConsultaClienteRS;
+import com.daraf.projectdarafprotocol.appdb.consultas.ConsultaFacturaRQ;
+import com.daraf.projectdarafprotocol.appdb.consultas.ConsultaFacturaRS;
 import com.daraf.projectdarafprotocol.appdb.ingresos.IngresoClienteRQ;
 import com.daraf.projectdarafprotocol.appdb.ingresos.IngresoClienteRS;
 import com.daraf.projectdarafprotocol.appdb.seguridades.AutenticacionEmpresaRQ;
@@ -22,6 +24,7 @@ import com.daraf.projectdarafprotocol.appdb.ingresos.IngresoFacturaRS;
 import com.daraf.projectdarafprotocol.model.Detalle;
 import com.daraf.projectdarafprotocol.model.DetalleFacturaAppRQ;
 import com.daraf.projectdarafprotocol.model.Empresa;
+import com.daraf.projectdarafprotocol.model.Factura;
 import com.daraf.projectdarafprotocol.model.Producto;
 import com.daraf.projectdarafutil.NetUtil;
 import java.util.ArrayList;
@@ -138,6 +141,21 @@ public class AppFacade {
         ConsultaProductoRS cprs = (ConsultaProductoRS) response.getCuerpo();
         if (cprs.getResultado().equals("1")) {
             return cprs.getProducto();
+        }
+        return null;
+    }
+    
+    public static Factura consultarFactura(String idFactura) {
+        DBClient dbClient = new DBClient();
+        MensajeRQ msj = new MensajeRQ("appserver", MensajeRQ.ID_MENSAJE_CONSULTAFACTURA);
+        ConsultaFacturaRQ con = new ConsultaFacturaRQ();
+        con.setIdFactura(idFactura);
+        msj.setCuerpo(con);
+
+        MensajeRS response = dbClient.sendRequest(msj);
+        ConsultaFacturaRS fac = (ConsultaFacturaRS) response.getCuerpo();
+        if (fac.getResultado().equals("1")) {
+            return fac.getFactura();
         }
         return null;
     }

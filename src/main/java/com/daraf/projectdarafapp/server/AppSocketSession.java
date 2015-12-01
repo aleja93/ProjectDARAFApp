@@ -16,6 +16,8 @@ import com.daraf.projectdarafprotocol.clienteapp.MensajeRQ;
 import com.daraf.projectdarafprotocol.clienteapp.MensajeRS;
 import com.daraf.projectdarafprotocol.clienteapp.consultas.ConsultaClienteRQ;
 import com.daraf.projectdarafprotocol.clienteapp.consultas.ConsultaClienteRS;
+import com.daraf.projectdarafprotocol.clienteapp.consultas.ConsultaFacturaRQ;
+import com.daraf.projectdarafprotocol.clienteapp.consultas.ConsultaFacturaRS;
 import com.daraf.projectdarafprotocol.clienteapp.consultas.ConsultaProductoRQ;
 import com.daraf.projectdarafprotocol.clienteapp.consultas.ConsultaProductoRS;
 import com.daraf.projectdarafprotocol.clienteapp.ingresos.IngresoClienteRQ;
@@ -25,6 +27,7 @@ import com.daraf.projectdarafprotocol.clienteapp.ingresos.IngresoFacturaRS;
 import com.daraf.projectdarafprotocol.clienteapp.seguridades.AutenticacionEmpresaRS;
 import com.daraf.projectdarafprotocol.model.Cliente;
 import com.daraf.projectdarafprotocol.model.Empresa;
+import com.daraf.projectdarafprotocol.model.Factura;
 import com.daraf.projectdarafprotocol.model.Producto;
 import com.daraf.projectdarafutil.NetUtil;
 import java.io.BufferedReader;
@@ -143,6 +146,26 @@ public class AppSocketSession extends Thread {
                         output.write(mensajeRS.asTexto() + "\n");
                         output.flush();
                     }
+                    
+                    if (msj.getCabecera().getIdMensaje().equals(Mensaje.ID_MENSAJE_CONSULTAFACTURA)) {
+
+                        //metodo de consulta producto
+                        ConsultaFacturaRQ cfrq = (ConsultaFacturaRQ) msj.getCuerpo();
+                        Factura response = AppFacade.consultarFactura(cfrq.getIdFactura());
+
+                        MensajeRS mensajeRS = new MensajeRS("appserver", Mensaje.ID_MENSAJE_CONSULTAFACTURA);
+                        ConsultaFacturaRS cprs = new ConsultaFacturaRS();
+                        if (response != null) {
+                            cprs.setResultado("1");
+                            cprs.setFactura(response);
+                        } else {
+                            cprs.setResultado("2");
+                        }
+                        mensajeRS.setCuerpo(cprs);
+                        output.write(mensajeRS.asTexto() + "\n");
+                        output.flush();
+                    }
+                    
                 } else {
                     output.write(Mensaje.ID_MENSAJE_FALLOBUILD + "\n");
                     output.flush();
